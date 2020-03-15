@@ -19,6 +19,7 @@
   "homepage": "https://github.com/astrommen/bamzon#readme",
   "dependencies": {
     "inquirer": "^7.1.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "node": "^13.10.1"
   }
 }

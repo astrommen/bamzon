@@ -4,7 +4,7 @@ var inquirer = require("inquirer");
 // create connection to sql database
 var connection = mysql.createConnection({
     host: "localhost",
-    port: 3000,
+    port: 3306,
     user: "root",
     password: "",
     database: "bamazonDB"
@@ -20,6 +20,11 @@ function buyProd() {
     // query db for all products
     connection.query("SELECT * FROM products", function(err, results) {
         if (err) throw err;
-        return results;
+
+        results.forEach(element => {
+            
+            return console.log(
+                element.item_id);
+        });
     })
 }
