@@ -18,7 +18,7 @@ var decor2 = "\n---------------------------------------------";
 connection.connect(function (err) {
     if (err) throw err;
     console.log("\nProducts for Sale" + decor);
-    prodList();
+    start();
     // setTimeout(start, 1000);
 });
 
@@ -36,40 +36,73 @@ function prodList() {
                 decor2
             );
         });
-    // })
-// }
-
-
-// function start() {
-
-    inquirer.prompt([
-        {
-            name: "item",
-            type: "input",
-            message: "What item id would you like to purchase?",
-            validate: function(value) {
-                if (isNaN(value) === false) {
-                  return true;
-                }
-                return false;
-            }
-        },
-        {
-            name: "quantity",
-            type: "input",
-            message: "How many would you like to purchase?",
-            validate: function(value) {
-                if (isNaN(value) === false) {
-                  return true;
-                }
-                return false;
-            }
-        }
-    ]).then(function(answer) {
-
-        var chosenItem;
-        console.log(answer);
-
     })
-})
+}
+
+
+function start() {
+
+    prodList();
+
+    connection.query("SELECT * FROM products", function (err, results) {
+        if (err) throw err;
+
+        inquirer.prompt([
+            {
+                name: "item",
+                type: "input",
+                message: "What item id would you like to purchase?",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                    return true;
+                    }
+                    return false;
+                }
+            },
+            {
+                name: "quantity",
+                type: "input",
+                message: "How many would you like to purchase?",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                    return true;
+                    }
+                    return false;
+                }
+            }
+        ]).then(function(answer) {
+
+            var chosenItem;
+            console.log(answer);
+
+            results.forEach (element => {
+                if (element.item_id === parseInt(answer.item)) {
+                    chosenItem = element;
+                }
+            })
+            
+            if (chosenItem.stock_quantity >= parseInt(answer.quantity)) { 
+                var newQty = chosenItem.stock_quantity - answer.quantity;
+                console.log(chosenItem.item_id);
+                
+                connection.query(
+                    
+                    "UPDATE products SET ? WHERE ?",
+                    [
+                        {
+                            stock_quantity: newQty
+                        },
+                        {
+                            item_id: chosenItem.item_id
+                        }
+                    ],
+                    function(error) {
+                        if (error) throw err;
+                        console.log("Purchased succesfully");
+                    }
+                );
+                console.log("This is " + chosenItem.product_name + " new qty " + newQty);
+            }
+        });
+    });
 }
