@@ -69,5 +69,20 @@ function viewAll() {
 }
 
 function viewLow() {
-  connection.query("SELECT * FROM products WHERE ")
+  connection.query("SELECT * FROM products WHERE stock_quantity<=30", function(err, results) {
+    if (err) throw err;
+    
+    console.log("\nLow Inventory" + decor);
+    
+    results.forEach(element => {
+    
+      return console.log(
+        "#" + element.item_id + " " +
+        element.product_name + " " +
+        "$" + element.price + " " +
+        element.stock_quantity + "ea" +
+        decor2
+      );
+    });
+  });
 }
