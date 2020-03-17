@@ -14,6 +14,8 @@ var connection = mysql.createConnection({
 var decor = "\n______________________________________________\n";
 var decor2 = "\n---------------------------------------------";
 
+var subTotal = [];
+
 // connect to mysql server and db
 connection.connect(function (err) {
     if (err) throw err;
@@ -99,16 +101,47 @@ function start() {
                 );
 
                 var userCost = chosenItem.price * answer.quantity;
+
+                subTotal.push(userCost);
                 
                 console.log(
                     "\nWe have stock!",
-                    "Your cost before tax is " + userCost
+                    "Your cost before tax is $" + userCost
                 );
-                start
+                beginOrEnd();
 
             } else {
                 console.log("\nNot enough stock...more on order");
+                beginOrEnd();
             }
         });
     });
+}
+
+function beginOrEnd() {
+    inquirer.prompt({
+        name: "again",
+        type: "list",
+        message: "Would you like to [CONTINUE] or [CHECKOUT]?",
+        choices: ["CONTINUE", "CHECKOUT"]
+    }).then(function(answer) {
+        if (answer.again === "CONTINUE") {
+            start();
+        } 
+        else if (answer.again === "CHECKOUT"){
+            var checkout = subTotal.reduce(myFunc);
+            
+            function myFunc(total, num) {
+                return total + num;
+            }
+
+            console.log(
+                "\nYour new subtotal is: $" + checkout,
+                "\nPlease follow the link to Paypal to complete your transaction!\n"
+            );
+
+            connection.end();
+        }
+    })
+
 }
