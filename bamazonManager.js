@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
 
 // used for decoration
 var decor = "\n________________________________________________________\n";
-var decor2 = "\n-------------------------------------------------------";
+var decor2 = "\n-------------------------------------------------------\n\n";
 
 connection.connect(function (err) {
   if (err) throw err;
@@ -65,6 +65,7 @@ function viewAll() {
       );
    
     });
+    start();
   })
 }
 
@@ -82,7 +83,61 @@ function viewLow() {
         "$" + element.price + " " +
         element.stock_quantity + "ea" +
         decor2
-      );
+        );
+      });
+      start();
+  });
+}
+
+function addInv() {
+  connection.query("SELECT * FROM products", function(err, results) {
+    if (err) throw err;
+
+    inquirer.prompt([
+      {
+        name: "product",
+        type: "rawlist",
+        choices: function() {
+          var prodArray = [];
+          results.forEach(element => {
+            prodArray.push(element.product_name);
+          });
+          return prodArray;
+        },
+        message: "\nWhich product needs more inventory?"
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "\nHow much inventory to add?"
+      }
+    ]).then(function(answer) {
+
+      var prod;
+
+      results.forEach(element => {
+        if (element.product_name === answer.product) {
+          prod = element;
+        }
+      });
+
+      var newQty = prod.stock_quantity + answer.quantity;
+
+      connection.query("UPDATE products SET ? WHERE ?",
+      [
+        {
+          stock_quantity: newQty
+        },
+        {
+          product_name: answer.products
+        }
+      ],
+      function(error){
+        if (error) throw err;
+
+        console.log("Inventory updated successfully!\n\n");
+        start();
+      });
     });
   });
 }
