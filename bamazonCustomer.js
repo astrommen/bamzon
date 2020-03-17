@@ -73,7 +73,6 @@ function start() {
         ]).then(function(answer) {
 
             var chosenItem;
-            console.log(answer);
 
             results.forEach (element => {
                 if (element.item_id === parseInt(answer.item)) {
@@ -82,8 +81,8 @@ function start() {
             })
             
             if (chosenItem.stock_quantity >= parseInt(answer.quantity)) { 
+
                 var newQty = chosenItem.stock_quantity - answer.quantity;
-                console.log(chosenItem.item_id);
                 
                 connection.query(
                     
@@ -102,6 +101,8 @@ function start() {
                     }
                 );
                 console.log("This is " + chosenItem.product_name + " new qty " + newQty);
+            } else {
+                console.log("Not enough stock...more on order")
             }
         });
     });
