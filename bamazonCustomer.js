@@ -85,7 +85,6 @@ function start() {
                 var newQty = chosenItem.stock_quantity - answer.quantity;
                 
                 connection.query(
-                    
                     "UPDATE products SET ? WHERE ?",
                     [
                         {
