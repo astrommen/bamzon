@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 });
 
 // used for decoration
-var decor = "\n________________________________________\n";
+var decor = "\n______________________________________________\n";
 var decor2 = "\n---------------------------------------------";
 
 // connect to mysql server and db
@@ -19,14 +19,12 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("\nProducts for Sale" + decor);
     start();
-    // setTimeout(start, 1000);
 });
 
 function prodList() {
     // query db for all products
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
-        console.log("is in query");
         results.forEach(element => {
 
             return console.log(
@@ -51,7 +49,7 @@ function start() {
             {
                 name: "item",
                 type: "input",
-                message: "What item id would you like to purchase?",
+                message: "\nWhat item id would you like to purchase?",
                 validate: function(value) {
                     if (isNaN(value) === false) {
                     return true;
@@ -62,7 +60,7 @@ function start() {
             {
                 name: "quantity",
                 type: "input",
-                message: "How many would you like to purchase?",
+                message: "\nHow many would you like to purchase?",
                 validate: function(value) {
                     if (isNaN(value) === false) {
                     return true;
@@ -97,12 +95,19 @@ function start() {
                     ],
                     function(error) {
                         if (error) throw err;
-                        console.log("Purchased succesfully");
                     }
                 );
-                console.log("This is " + chosenItem.product_name + " new qty " + newQty);
+
+                var userCost = chosenItem.price * answer.quantity;
+                
+                console.log(
+                    "\nWe have stock!",
+                    "Your cost before tax is " + userCost
+                );
+                start
+
             } else {
-                console.log("Not enough stock...more on order")
+                console.log("\nNot enough stock...more on order");
             }
         });
     });
