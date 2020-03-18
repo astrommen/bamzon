@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
 
 // used for decoration
 var decor = "\n________________________________________________________\n";
-var decor2 = "\n-------------------------------------------------------\n\n";
+var decor2 = "\n-------------------------------------------------------";
 
 connection.connect(function (err) {
   if (err) throw err;
@@ -28,7 +28,8 @@ function start() {
       "View Products for Sale", 
       "View Low Inventory",
       "Add to Inventory",
-      "Add New Product"
+      "Add New Product",
+      "Quit"
     ]
   }).then(function(answer) {
     if (answer.menu === "View Products for Sale") {
@@ -41,7 +42,7 @@ function start() {
       addInv();
     }
     else if (answer.menu === "Add New Product") {
-      addProd();
+      newProd();
     }
   })
 }
@@ -59,9 +60,9 @@ function viewAll() {
       return console.log(
         "#" + element.item_id + " " +
         element.product_name + " " +
-        "$" + element.price + " " +
-        element.stock_quantity + "ea" +
-        decor2
+        "$" + element.price + "ea" + " " +
+        element.stock_quantity + "qty" +
+        decor2 + "\n\n"
       );
    
     });
@@ -80,9 +81,9 @@ function viewLow() {
       return console.log(
         "#" + element.item_id + " " +
         element.product_name + " " +
-        "$" + element.price + " " +
-        element.stock_quantity + "ea" +
-        decor2
+        "$" + element.price + "ea" + " " +
+        element.stock_quantity + "qty" +
+        decor2 + "\n\n"
         );
       });
       start();
@@ -139,5 +140,57 @@ function addInv() {
         start();
       });
     });
+  });
+}
+
+function newProd() {
+  inquirer.prompt([
+    {
+      name: "product",
+      type: "input",
+      message: "What product would you like to add?"
+    },
+    {
+      name: "department",
+      type: "input",
+      message: "What department does it go in?"
+    },
+    {
+      name: "price",
+      type: "input",
+      message: "What is the price per unit?",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    },
+    {
+      name: "qty",
+      type: "input",
+      message: "How many will go in stock?",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    },
+  ]).then(function(answer){
+    connection.query(
+      "INSERT INTO products SET ?",
+      {
+        product_name: answer.product,
+        department_name: answer.department,
+        price: answer.price || 0,
+        stock_quantity: answer.qty || 0
+      },
+      function(err) {
+        if (err) throw err;
+        console.log("\nProduct added successfully!");
+        start();
+      }
+    );
   });
 }
