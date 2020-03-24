@@ -122,7 +122,7 @@ function addInv() {
         }
       });
 
-      var newQty = prod.stock_quantity + answer.quantity;
+      var newQty = parseInt(prod.stock_quantity) + parseInt(answer.quantity);
 
       connection.query("UPDATE products SET ? WHERE ?",
       [
@@ -130,7 +130,7 @@ function addInv() {
           stock_quantity: newQty
         },
         {
-          product_name: answer.products
+          product_name: answer.product
         }
       ],
       function(error){
